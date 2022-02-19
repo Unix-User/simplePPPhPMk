@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="row">
+        <h1 class="h1 col-xs-12"><?php echo $this->getPageTitle() ?></h1>
+
+        <form action="/device/<?php echo $this->view->device->id ?>/update" method="post" accept-charset="utf-8">
+
+            <div class="col-sm-10">
+                <div class="form-group <?php echo(isset($this->errors['device'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">Dispositivo</label>
+                    <input type="text" name="device" class="form-control" value="<?php echo (isset($this->inputs['device'])) ? $this->inputs['device'] : $this->view->device->name; ?>"/>
+                    <?php if (isset($this->errors['device'])): ?>
+                        <span class="help-block"><?php echo $this->errors['device'] ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo(isset($this->errors['address'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">Endereço ip</label>
+                    <input type="text" name="address" class="form-control" value="<?php echo (isset($this->inputs['address'])) ? $this->inputs['address'] : $this->view->device->address; ?>"/>
+                    <?php if (isset($this->errors['address'])): ?>
+                        <span class="help-block"><?php echo $this->errors['address'] ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo(isset($this->errors['user'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">usuario</label>
+                    <input type="text" name="user" class="form-control" value="<?php echo (isset($this->inputs['user'])) ? $this->inputs['user'] : $this->view->device->user; ?>"/>
+                    <?php if (isset($this->errors['user'])): ?>
+                        <span class="help-block"><?php echo $this->errors['user'] ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo(isset($this->errors['password'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">password</label>
+                    <input type="text" name="password" class="form-control" value="<?php echo (isset($this->inputs['password'])) ? $this->inputs['password'] : $this->view->device->password; ?>"/>
+                    <?php if (isset($this->errors['password'])): ?>
+                        <span class="help-block"><?php echo $this->errors['password'] ?></span>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <a href="/devices" class="btn btn-default">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>

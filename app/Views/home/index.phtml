@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="row">
+        <h2 class="h2 col-xs-12"><?php $this->getPageTitle(); ?></h2>
+    </div>
+    <div class="row">
+        <?php $this->renderView('alerts/_success'); ?>
+        <?php $this->renderView('alerts/_errors') ?>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h3"><i class="bi-person"></i> Pessoas</h3>
+                    <p class="card-text text-justify">Painel de usuários conectados no pppoe da routerboard</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted float-end">
+                        <a href="/users">
+                            <button class="btn btn-secondary btn-xs" type="button">
+                                <i class="bi-forward"> Acessar</i>
+                            </button>
+                        </a>
+                    </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h3"><i class="bi-arrow-repeat"></i> Sincronizar</h3>
+                    <p class="card-text text-justify">Cadastra automaticamente usuários do site na routerboard</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted float-end">
+                        <a href="/sync">
+                            <button class="btn btn-secondary btn-xs" type="button">
+                                <i class="bi-forward"> Acessar</i>
+                            </button>
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h3"><i class="bi-router"></i> Dispositivos</h3>
+                    <p class="card-text text-justify">Painel de dispositivos cadastrados para sincronização</p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted float-end">
+                        <a href="/devices">
+                            <button class="btn btn-secondary btn-xs" type="button">
+                                <i class="bi-forward"> Acessar</i>
+                            </button>
+                        </a>
+                    </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

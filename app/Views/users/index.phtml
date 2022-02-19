@@ -1,0 +1,107 @@
+<div class="container">
+    <?php $this->renderView('alerts/_success'); ?>
+    <?php $this->renderView('alerts/_errors'); ?>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab" aria-controls="admin" aria-selected="true">Admin</button>
+        </li>
+        <?php foreach ($this->view->devices as $device) : ?>
+            <?php if ($device->user_id == $this->view->user->id) : ?>
+                <?php if ($this->setCliTarget($device->address, $device->user, $device->password) == true) : ?>
+                    <?php $this->util->setMenu('/ppp active'); ?>
+                    <?php if ($this->util->count() > 0) : ?>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="<?php echo $device->name; ?>-tab" data-bs-toggle="tab" data-bs-target="#<?php echo $device->name; ?>" type="button" role="tab" aria-controls="<?php echo $device->name; ?>" aria-selected="false"><?php echo $device->name; ?></button>
+                        </li>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </ul>
+    <br />
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h3"><i class="bi-person"></i>Administradores</h3>
+                            <p class="card-text text-justify">Usuários com permissões para consultar, alterar e remover informações no sistema</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted float-end">
+                                <a class="float-end" href="/user/create">
+                                    <button class="btn btn-primary">
+                                        <i class="bi-person-plus"></i> Incluir
+                                    </button>
+                                </a>
+                            </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <?php foreach ($this->view->users as $user) : ?>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <a href="/user/<?php echo $user->id; ?>/show">
+                                    <h3 class="h3"><i class="bi-person"></i><?php echo $user->name ?></h3>
+                                    <p class="card-text text-justify">E-Mail: <?php echo $user->email ?></p>
+                                    <p class="card-text text-justify">Site: <?php echo $user->url ?></p>
+                                </a>
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted float-end">
+                                    <a href="/user/<?php echo $user->id ?>/edit">
+                                        <button class="btn btn-warning btn-xs" type="button">
+                                            <i class="bi-pencil"></i>
+                                        </button>
+                                    </a>
+                                    <a href="/user/<?php echo $user->id ?>/delete">
+                                        <button class="btn btn-danger btn-xs" type="button" onclick="return confirm('Deletar esse intem?')">
+                                            <i class="bi-trash"></i>
+                                        </button>
+                                    </a>
+                                </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php foreach ($this->view->devices as $device) : ?>
+            <?php if ($device->user_id == $this->view->user->id) : ?>
+                <div class="tab-pane fade" id="<?php echo $device->name; ?>" role="tabpanel" aria-labelledby="<?php echo $device->name; ?>-tab">
+                    <?php if ($this->setCliTarget($device->address, $device->user, $device->password) == true) : ?>
+                        <?php $this->util->setMenu('/ppp active'); ?>
+                        <?php if ($this->util->count() > 0) : ?>
+                            <div class="row row-cols-1 row-cols-md-3 g-4">
+                                <?php foreach ($this->util->getAll() as $user) : ?>
+                                    <div class="col">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h3 class="h3"><i class="bi-person"></i><?php echo $user->getProperty('name'); ?></h3>
+                                                <p class="card-text text-justify">Tempo de Conexão: <?php echo $user->getProperty('uptime'); ?></p>
+                                            </div>
+                                            <div class="card-footer">
+                                                <small class="text-muted float-end">
+                                                    <a href="<?php echo 'http://' . $user->getProperty('address'); ?>" target="_blank">
+                                                        <button class="btn btn-primary btn-xs" type="button">
+                                                            <i class="bi-router"></i> <?php echo $user->getProperty('address'); ?>
+                                                        </button>
+                                                    </a>
+                                                </small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+</div>

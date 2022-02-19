@@ -1,0 +1,9 @@
+<div id="post-request" class="card text-center m-3">
+    <h5 class="card-header">Sincronizando com o site</h5>
+    <div class="card-body">
+        status: <span class="article-id"></span>
+    </div>
+</div>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="/assets/js/fetch.js"></script>
+<script>window.onload = sync('<?php echo $this->view->url;?>');</script>

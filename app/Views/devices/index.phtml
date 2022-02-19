@@ -1,0 +1,80 @@
+<div class="container">
+    <?php $this->renderView('alerts/_success'); ?>
+    <?php $this->renderView('alerts/_errors'); ?>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h3"><i class="bi-router"></i> Dispositivos</h3>
+                    <p class="card-text text-justify">Dispositivos cadastrados para <?php echo $this->view->user->name; ?></p>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted float-end">
+                        <a class="float-end" href="/device/create">
+                            <button class="btn btn-primary">
+                                <i class="bi-terminal-plus"></i> Incluir
+                            </button>
+                        </a>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <?php foreach ($this->view->devices as $device) : ?>
+            <?php if ($device->user_id == $this->view->user->id) : ?>
+                <?php $connection = $this->setCliTarget($device->address, $device->user, $device->password); ?>
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <a href="/device/<?php echo $device->id ?>/show">
+                                <h3 class="h3"><i class="bi-router"></i> <?php echo $device->name; ?></h3>
+                            </a>
+                            <p class="card-text text-justify">Endereço IP: <?php echo $device->address; ?>
+                                <?php if ($connection == true) : ?>
+                                    <?php $this->util->setMenu('/system resource') ?>
+                                    <?php foreach ($this->util->getAll() as $item) : ?>
+                                        <small class="text-muted float-end">CPU: <?php echo $item->getProperty('cpu-load') . '%'; ?></small>
+                                        <br />Tempo ligado: <?php echo $item->getProperty('uptime'); ?>
+                                        <?php $secrets = $this->util->setMenu('/ppp secret'); ?>
+                                        <br />Clientes cadastrados: <?php echo count($secrets) . "\n"; ?>
+                                        <?php $active = $this->util->setMenu('/ppp active'); ?>
+                                        <br />Clientes conectados: <?php echo count($active) . "\n"; ?>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <br />Tempo ligado: offline
+                                    <br />Clientes cadastrados: --
+                                    <br />Clientes conectados: --
+                                <?php endif; ?>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted float-end">
+                                <?php if ($connection == true) : ?>
+                                    <button class="btn btn-primary btn-xs" type="button" onclick='sync("<?php echo $this->view->user->url; ?>", "email=<?php echo $this->view->user->email; ?>&password=<?php echo $device->password; ?>", "<?php echo $device->id ?>");'>
+                                        <i class="bi-arrow-repeat"></i>
+                                    </button>
+                                <?php endif; ?>
+                                <a href="/device/<?php echo $device->id ?>/edit">
+                                    <button class="btn btn-warning btn-xs" type="button">
+                                        <i class="bi-pencil"></i>
+                                    </button>
+                                </a>
+                                <a href="/device/<?php echo $device->id ?>/delete">
+                                    <button class="btn btn-danger btn-xs" type="button" onclick="return confirm('Deseja remover esse dispositivo?')">
+                                        <i class="bi-trash"></i>
+                                    </button>
+                                </a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+</div>
+<script src="/assets/js/fetch.js"></script>
+<script>
+    document.getElementsByClassName("sync").addEventListener("click", function() {
+        alert('sincronizando');
+    });
+</script>

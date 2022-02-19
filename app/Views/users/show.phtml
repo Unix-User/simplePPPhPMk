@@ -1,0 +1,40 @@
+<div class="container">
+    <?php $this->renderView('alerts/_success'); ?>
+    <?php $this->renderView('alerts/_errors'); ?>
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h3"><i class="bi-person"></i><?php echo $this->getPageTitle(); ?></h3>
+                <p class="card-text text-justify"><?php echo $this->view->user->url; ?></p>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <?php foreach ($this->view->devices as $device) : ?>
+            <?php if ($device->user_id == $this->view->user->id) : ?>
+                <?php $this->setCliTarget($device->address, $device->user, $device->password); ?>
+                <?php $this->util->setMenu('/system resource'); ?>
+                <?php foreach ($this->util->getAll() as $item) : ?>
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <a href="/device/<?php echo $device->id; ?>/show">
+                                    <h3 class="h3"><i class="bi-person"></i><?php echo $device->name; ?></h3>
+                                    <p class="card-text text-justify">endereço ip: <?php echo $device->address ?>
+                                        <br />Tempo ligado: ' . <?php echo $item->getProperty('uptime'); ?>
+                                    </p>
+                                </a>
+                            </div>
+                            <div class="card-footer">
+                                <?php $this->util->setMenu('/ppp active'); ?>
+                                <small class="text-muted float-start">clientes conectados: <span><?php echo count($this->util) . "\n"; ?></span></small>
+                                <small class="text-muted float-end"><?php echo 'CPU: ' . $item->getProperty('cpu-load') . '%'; ?></small>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="container">
+    <?php $this->renderView('alerts/_success'); ?>
+    <?php $this->renderView('alerts/_errors'); ?>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="connected-tab" data-bs-toggle="tab" data-bs-target="#connected" type="button" role="tab" aria-controls="connected" aria-selected="true">Ativos</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Registrados</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">Configurações</button>
+        </li>
+    </ul>
+    <br />
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="connected" role="tabpanel" aria-labelledby="connected-tab">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <?php if (isset($this->view->active)) : ?>
+                    <?php foreach ($this->view->active as $user) : ?>
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h3 class="h3"><i class="bi-person"></i><?php echo $user->getProperty('name'); ?></h3>
+                                    <p class="card-text text-justify">Tempo de Conexão: <?php echo $user->getProperty('uptime'); ?></p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted float-end">
+                                        <a href="<?php echo 'http://' . $user->getProperty('address'); ?>" target="_blank">
+                                            <button class="btn btn-primary btn-xs" type="button">
+                                                <i class="bi-router"></i> <?php echo $user->getProperty('address'); ?>
+                                            </button>
+                                        </a>
+                                        <a href="/user/<?php echo $user->getProperty('name'); ?>/disconnect">
+                                            <button class="btn btn-warning btn-xs" type="button" onclick="return confirm('Deseja desconectar esse usuário?')">
+                                                <i class="bi-wifi-off"></i>
+                                            </button>
+                                        </a>
+                                        <a href="/user/<?php echo  $user->getProperty('name'); ?>/disable">
+                                            <button class="btn btn-secondary btn-xs" type="button">
+                                                <i class="bi-person-dash"></i>
+                                            </button>
+                                        </a>
+                                        <a href="/user/<?php echo $user->getProperty('name'); ?>/remove">
+                                            <button class="btn btn-danger btn-xs" type="button" onclick="return confirm('Deseja apagar esse usuário?')">
+                                                <i class="bi-trash"></i>
+                                            </button>
+                                        </a>
+                                    </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <?php if (isset($this->view->users)) : ?>
+                    <?php foreach ($this->view->users as $user) : ?>
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h3 class="h3"><i class="bi-person"></i><?php echo $user->getProperty('name'); ?></h3>
+                                    <p class="card-text text-justify">Tempo de Conexão: <?php echo $user->getProperty('uptime'); ?></p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted float-end">
+                                        <a href="/user/<?php echo $user->getProperty('name'); ?>/disconnect">
+                                            <button class="btn btn-warning btn-xs" type="button" onclick="return confirm('Deseja desconectar esse usuário?')">
+                                                <i class="bi-wifi-off"></i>
+                                            </button>
+                                        </a>
+                                        <a href="/user/<?php echo  $user->getProperty('name'); ?>/disable">
+                                            <button class="btn btn-secondary btn-xs" type="button">
+                                                <i class="bi-person-dash"></i>
+                                            </button>
+                                        </a>
+                                        <a href="/user/<?php echo $user->getProperty('name'); ?>/remove">
+                                            <button class="btn btn-danger btn-xs" type="button" onclick="return confirm('Deseja apagar esse usuário?')">
+                                                <i class="bi-trash"></i>
+                                            </button>
+                                        </a>
+                                    </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">...</div>
+    </div>
+</div>

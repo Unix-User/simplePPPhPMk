@@ -1,0 +1,28 @@
+{
+    "name": "unix/microframework",
+    "description": "sincronização e manutenção de usuários em dispositivos mikrotik",
+    "license": "MIT",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Weverton S Lima",
+            "email": "wevertonslima@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Core\\": "core/"
+        }
+    },
+    "require": {
+        "php": ">=7.2.5",
+        "illuminate/database": "^7.0",
+        "doctrine/common": "^2.6",
+        "doctrine/annotations": "^1.8",
+        "league/flysystem": "^2.0",
+        "pear2/net_transmitter": "1.0.0b1",
+        "pear2/net_routeros": "dev-develop@dev",
+        "pear2/cache_shm": "^0.2.0"
+    }
+}

@@ -1,0 +1,12 @@
+<?php if (isset($this->success)) : ?>
+    <?php foreach ($this->success as $msg) : ?>
+        <div class="alert alert-success d-flex alert-dismissable fade show hstack gap-3" role="alert">
+            <i class="bi-check-circle-fill"></i>
+            <?php echo $msg; ?>
+            <div class="ms-auto">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                </button>
+            </div>
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
