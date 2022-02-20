@@ -3,7 +3,7 @@
 /*
  * The MIT License
  *
- * Copyright 2020 Weverton.
+ * Copyright 2020 weverton.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,30 +24,34 @@
  * THE SOFTWARE.
  */
 
-namespace Core;
+namespace App\Models;
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use \Core\BaseModelElloquent;
 
-$conf = require_once __DIR__ . "/../app/database.php";
+/**
+ * Description of Product
+ *
+ * @author weverton
+ */
+class Product extends BaseModelElloquent {
 
-    $capsule = new Capsule;
+    public $table = 'products';
+    public $timestamps = false;
+    protected $fillable = ['user_id', 'product', 'description'];
 
-    if ($conf['driver'] == 'mysql') {
-        $capsule->addConnection([
-            'driver' => 'mysql',
-            'host' => $conf['mysql']['host'],
-            'database' => $conf['mysql']['database'],
-            'username' => $conf['mysql']['user'],
-            'password' => $conf['mysql']['pass'],
-            'charset' => $conf['mysql']['charset'],
-            'collation' => $conf['mysql']['collation'],
-            'prefix' => '',
-        ]);
-    } elseif ($conf['driver'] == 'sqlite') {
-        $capsule->addConnection([
-            'driver' => 'sqlite',
-            'database' => __DIR__ . "/../storage/database/" . $conf['sqlite']['database']
-        ]);
+    public function rules() {
+        return [
+            'product' => 'required|min:6|max:20',
+            'description' => 'min:30'
+        ];
     }
-    $capsule->setAsGlobal();
-    $capsule->bootEloquent();
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function category() {
+        return $this->belongsToMany(Category::class);
+    }
+
+}
