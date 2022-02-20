@@ -1,0 +1,10 @@
+@import "bootstrap.min.css";
+@import '../bootstrap-icons/bootstrap-icons.css';
+
+a{
+    text-decoration: none;
+}
+
+.row-bottom-20{
+    margin-top: 20px;
+}
