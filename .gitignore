@@ -1619,3 +1619,9 @@ public_html/assets/js/bootstrap.js
 public_html/assets/js/bootstrap.js.map
 public_html/assets/js/bootstrap.min.js
 public_html/assets/js/bootstrap.min.js.map
+app/Views/products/create.phtml
+app/Views/products/edit.phtml
+app/Views/products/index.phtml
+app/Views/products/show.phtml
+app/Models/Product.php
+app/Controllers/ProductsController.php
