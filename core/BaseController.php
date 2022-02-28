@@ -28,7 +28,6 @@ namespace Core;
 
 use PEAR2\Net\RouterOS;
 
-
 /**
  * Description of BaseController
  *

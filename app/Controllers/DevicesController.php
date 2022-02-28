@@ -33,6 +33,11 @@ use Core\BaseController;
 use Core\Redirect;
 use Core\Validator;
 use PEAR2\Net\RouterOS;
+use League\Flysystem\Filesystem;
+use League\Flysystem\MountManager;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
+
 
 /**
  *
@@ -69,7 +74,7 @@ class DevicesController extends BaseController
             return $this->renderView("devices/show", "layout");
         }
         return Redirect::route('/devices', [
-            'errors' => ['Dispositivo '. $this->view->device->name .' não esta conectado']
+            'errors' => ['Dispositivo ' . $this->view->device->name . ' não esta conectado']
         ]);
     }
 
@@ -86,6 +91,26 @@ class DevicesController extends BaseController
             'name' => $request->post->device,
             'address' => $request->post->address
         ];
+        $adapter = new LocalFilesystemAdapter(
+            __DIR__ . '/../../storage/',
+            PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0640,
+                    'private' => 0604,
+                ],
+                'dir' => [
+                    'public' => 0740,
+                    'private' => 7604,
+                ],
+            ]),
+            LOCK_EX,
+            LocalFilesystemAdapter::DISALLOW_LINKS
+        );
+        $filesystem = new Filesystem($adapter);
+        $manager = new MountManager([
+            'local' => $filesystem
+        ]);
+        $manager->write('local://'.$data['name'].'.conf', $data['address'] );
         if (Validator::make($data, $this->device->rules())) {
             return Redirect::route('/device/create');
         }
