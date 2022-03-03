@@ -33,11 +33,12 @@ use Core\BaseController;
 use Core\Redirect;
 use Core\Validator;
 use PEAR2\Net\RouterOS;
-use League\Flysystem\Filesystem;
-use League\Flysystem\MountManager;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
-
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\Stream;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  *
@@ -84,37 +85,37 @@ class DevicesController extends BaseController
         return $this->renderView("devices/create", 'layout');
     }
 
+    public function getCert($id)
+    {
+        $client = $this->device->find($id)->name;
+        $downloadable_file_stream = $this->filesystem->readStream('/' . $client . '.p12');
+        $this->downloadable_file_stream_contents = stream_get_contents($downloadable_file_stream);
+        $response = new Response($this->downloadable_file_stream_contents);
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            'certificate.p12'
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->send();
+    }
+
+
     public function store($request)
     {
         $data = [
             'user_id' => Auth::id(),
             'name' => $request->post->device,
-            'address' => $request->post->address
+            'address' => $request->post->address,
+            'user' => $request->post->user,
+            'password' => $request->post->password
         ];
-        $adapter = new LocalFilesystemAdapter(
-            __DIR__ . '/../../storage/',
-            PortableVisibilityConverter::fromArray([
-                'file' => [
-                    'public' => 0640,
-                    'private' => 0604,
-                ],
-                'dir' => [
-                    'public' => 0740,
-                    'private' => 7604,
-                ],
-            ]),
-            LOCK_EX,
-            LocalFilesystemAdapter::DISALLOW_LINKS
-        );
-        $filesystem = new Filesystem($adapter);
-        $manager = new MountManager([
-            'local' => $filesystem
-        ]);
-        $manager->write('local://'.$data['name'].'.conf', $data['address'] );
+
         if (Validator::make($data, $this->device->rules())) {
             return Redirect::route('/device/create');
         }
+
         try {
+            $this->cliCert('--addclient', $data['name'], $data['address']);
             $device = $this->device->create($data);
             if (isset($request->post->category_id)) {
                 $device->category()->attach($request->post->category_id);
@@ -156,6 +157,7 @@ class DevicesController extends BaseController
         }
 
         try {
+            $this->cliCert('--exportclient', $data['name'], $data['address']);
             $device = $this->device->find($id);
             $device->update($data);
             $this->device->find($id)->update($data);
@@ -178,6 +180,8 @@ class DevicesController extends BaseController
                     'errors' => ['Você não pode excluir dispositivos de outros usuários.']
                 ]);
             }
+            $this->manager->write('local://html/storage/' . $device->name . '.conf', '');
+            $this->cliCert('--revokeclient', $device->name, $device->address);
             $device->delete();
             return Redirect::route('/devices', [
                 'success' => ['Dispositivo excluído com sucesso!']

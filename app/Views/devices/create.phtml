@@ -19,6 +19,22 @@
                         <span class="help-block"><?php echo $this->errors['address'] ?></span>
                     <?php endif; ?>
                 </div>
+
+                <div class="form-group <?php echo(isset($this->errors['user'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">usuario</label>
+                    <input type="text" name="user" class="form-control" value="<?php echo (isset($this->inputs['user'])) ? $this->inputs['user'] : ''; ?>"/>
+                    <?php if (isset($this->errors['user'])): ?>
+                        <span class="help-block"><?php echo $this->errors['user'] ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo(isset($this->errors['password'])) ? 'has-error' : ''; ?>">
+                    <label for="title" class="control-label">password</label>
+                    <input type="text" name="password" class="form-control" value="<?php echo (isset($this->inputs['password'])) ? $this->inputs['password'] : ''; ?>"/>
+                    <?php if (isset($this->errors['password'])): ?>
+                        <span class="help-block"><?php echo $this->errors['password'] ?></span>
+                    <?php endif; ?>
+                </div>
             </div>
             <div class="col-xs-12">
                 <a href="/products" class="btn btn-default">Cancelar</a>

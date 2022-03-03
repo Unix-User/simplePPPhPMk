@@ -27,6 +27,12 @@
 namespace Core;
 
 use PEAR2\Net\RouterOS;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+use League\Flysystem\Filesystem;
+use League\Flysystem\MountManager;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 
 /**
  * Description of BaseController
@@ -54,7 +60,6 @@ abstract class BaseController
         $this->view = new \stdClass;
         $this->auth = new Auth;
 
-
         if (Session::get('errors')) {
             $this->errors = Session::get('errors');
             Session::destroy('errors');
@@ -76,6 +81,26 @@ abstract class BaseController
                 );
             }
         }
+
+        $this->adapter = new LocalFilesystemAdapter(
+            __DIR__ . '/../../',
+            PortableVisibilityConverter::fromArray([
+                'file' => [
+                    'public' => 0640,
+                    'private' => 0604,
+                ],
+                'dir' => [
+                    'public' => 0740,
+                    'private' => 7604,
+                ],
+            ]),
+            LOCK_EX,
+            LocalFilesystemAdapter::DISALLOW_LINKS
+        );
+        $this->filesystem = new Filesystem($this->adapter);
+        $this->manager = new MountManager([
+            'local' => $this->filesystem
+        ]);
     }
 
     protected function renderView($viewPath, $layoutPath = null)
@@ -132,6 +157,34 @@ abstract class BaseController
         }
     }
 
+    protected function cliCert($action, $client, $address)
+    {
+        $this->process = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/ikev2.sh',  $action, $client]);
+        $this->process1 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-F', '-d', 'sql:/etc/ipsec.d', '-n', $client]);
+        $this->process2 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-D', '-d', 'sql:/etc/ipsec.d', '-n', $client, '2>/dev/null']);
+        $this->process3 = new Process(['sudo', '-u', 'www-data', 'sudo', 'systemctl', 'restart', 'ipsec.service',]);
+        $content = 'conn ' . $client . '
+        rightid=@' . $client . '
+        rightaddresspool=' . $address . '-' . $address . '
+        also=ikev2-cp
+        ';
+        try {
+            $this->process->run();
+            $this->process->getOutput();
+            if ($action == "--revokeclient") {
+                $content == '';
+                $this->process1->run();
+                $this->process1->getOutput();
+                $this->process2->run();
+                $this->process2->getOutput();
+            }
+            $this->manager->write('local://html/storage/' . $client . '.conf', $content);
+            $this->process3->run();
+            $this->process3->getOutput();
+        } catch (ProcessFailedException $exception) {
+            return $exception->getMessage();
+        }
+    }
 
     protected function getPageTitle($separator = null)
     {

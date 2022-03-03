@@ -32,6 +32,7 @@ $routes[] = ['/device/{id}/show', 'DevicesController@show'];
 $routes[] = ['/device/create', 'DevicesController@create', 'auth'];
 $routes[] = ['/device/store', 'DevicesController@store', 'auth'];
 $routes[] = ['/device/{id}/edit', 'DevicesController@edit', 'auth'];
+$routes[] = ['/device/{id}/getCert', 'DevicesController@getCert', 'auth'];
 $routes[] = ['/device/{id}/update', 'DevicesController@update', 'auth'];
 $routes[] = ['/device/{id}/delete', 'DevicesController@delete', 'auth'];
 $routes[] = ['/device/{id}/sync', 'DevicesController@sync'];

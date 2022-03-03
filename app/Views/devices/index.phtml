@@ -53,6 +53,11 @@
                                         <i class="bi-arrow-repeat"></i>
                                     </button>
                                 <?php endif; ?>
+                                <a href="/device/<?php echo $device->id ?>/getCert" onclick="alert('Baixando seu certificado')">
+                                    <button class="btn btn-success btn-xs" type="button">
+                                        <i class="bi-key"></i>
+                                    </button>
+                                </a>
                                 <a href="/device/<?php echo $device->id ?>/edit">
                                     <button class="btn btn-warning btn-xs" type="button">
                                         <i class="bi-pencil"></i>
