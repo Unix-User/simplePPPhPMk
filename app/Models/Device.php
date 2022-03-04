@@ -37,14 +37,13 @@ class Device extends BaseModelElloquent {
 
     public $table = 'devices';
     public $timestamps = false;
-    protected $fillable = ['user_id', 'name', 'address', 'user', 'password'];
+    protected $fillable = ['user_id', 'name', 'address', 'user', 'password', 'ikev2'];
 
     public function rules() {
         return [
             'name' => 'required|min:2|max:20',
             'user' => 'required|min:2|max:20',
-            'password' => 'required|min:2|max:20',
-            'address' => 'required'
+            'password' => 'required|min:2|max:20'
         ];
     }
 

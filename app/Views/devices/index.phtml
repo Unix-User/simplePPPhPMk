@@ -21,7 +21,7 @@
         </div>
         <?php foreach ($this->view->devices as $device) : ?>
             <?php if ($device->user_id == $this->view->user->id) : ?>
-                <?php $connection = $this->setCliTarget($device->address, $device->user, $device->password); ?>
+                <?php $check = $this->checkCliTarget($device->address); ?>
                 <div class="col">
                     <div class="card h-100">
                         <div class="card-body">
@@ -29,7 +29,8 @@
                                 <h3 class="h3"><i class="bi-router"></i> <?php echo $device->name; ?></h3>
                             </a>
                             <p class="card-text text-justify">Endereço IP: <?php echo $device->address; ?>
-                                <?php if ($connection == true) : ?>
+                                <?php if ($check == true) : ?>
+                                    <?php $this->setCliTarget($device->address, $device->user, $device->password); ?>
                                     <?php $this->util->setMenu('/system resource') ?>
                                     <?php foreach ($this->util->getAll() as $item) : ?>
                                         <small class="text-muted float-end">CPU: <?php echo $item->getProperty('cpu-load') . '%'; ?></small>

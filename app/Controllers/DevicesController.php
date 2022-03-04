@@ -35,10 +35,6 @@ use Core\Validator;
 use PEAR2\Net\RouterOS;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\Stream;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  *
@@ -66,7 +62,8 @@ class DevicesController extends BaseController
     public function show($id)
     {
         $this->view->device = $this->device->find($id);
-        if ($this->setCliTarget($this->view->device->address, $this->view->device->user, $this->view->device->password) == true) {
+        if ($this->checkCliTarget($this->view->device->address)){
+            $this->setCliTarget($this->view->device->address, $this->view->device->user, $this->view->device->password);
             $this->util->setMenu('/ppp secret');
             $this->view->users = $this->util->getAll();
             $this->util->setMenu('/ppp active');
@@ -107,7 +104,8 @@ class DevicesController extends BaseController
             'name' => $request->post->device,
             'address' => $request->post->address,
             'user' => $request->post->user,
-            'password' => $request->post->password
+            'password' => $request->post->password,
+            'ikev2' => $request->post->ikev2
         ];
 
         if (Validator::make($data, $this->device->rules())) {
@@ -115,7 +113,9 @@ class DevicesController extends BaseController
         }
 
         try {
-            $this->cliCert('--addclient', $data['name'], $data['address']);
+            if ((isset($request->post->ikev2)) && ($request->post->ikev2 == true)) {
+                $this->cliCert('--addclient', $data['name'], $data['address']);
+            }
             $device = $this->device->create($data);
             if (isset($request->post->category_id)) {
                 $device->category()->attach($request->post->category_id);
@@ -149,7 +149,8 @@ class DevicesController extends BaseController
             'name' => $request->post->device,
             'address' => $request->post->address,
             'user' => $request->post->user,
-            'password' => $request->post->password
+            'password' => $request->post->password,
+            'ikev2' => $request->post->ikev2
         ];
 
         if (Validator::make($data, $this->device->rules())) {
@@ -157,7 +158,9 @@ class DevicesController extends BaseController
         }
 
         try {
-            $this->cliCert('--exportclient', $data['name'], $data['address']);
+            if ((isset($request->post->ikev2)) && ($request->post->ikev2 == true)) {
+                $this->cliCert('--addclient', $data['name'], $data['address']);
+            }
             $device = $this->device->find($id);
             $device->update($data);
             $this->device->find($id)->update($data);
@@ -180,8 +183,10 @@ class DevicesController extends BaseController
                     'errors' => ['Você não pode excluir dispositivos de outros usuários.']
                 ]);
             }
-            $this->manager->write('local://html/storage/' . $device->name . '.conf', '');
-            $this->cliCert('--revokeclient', $device->name, $device->address);
+            if ((isset($device->ikev2)) && ($device->ikev2 == true)) {
+                $this->manager->write('local://html/storage/' . $device->name . '.conf', '');
+                $this->cliCert('--revokeclient', $device->name, $device->address);
+            }
             $device->delete();
             return Redirect::route('/devices', [
                 'success' => ['Dispositivo excluído com sucesso!']

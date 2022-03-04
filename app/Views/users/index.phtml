@@ -7,7 +7,9 @@
         </li>
         <?php foreach ($this->view->devices as $device) : ?>
             <?php if ($device->user_id == $this->view->user->id) : ?>
-                <?php if ($this->setCliTarget($device->address, $device->user, $device->password) == true) : ?>
+                <?php $check = $this->checkCliTarget($device->address); ?>
+                <?php if ($check == true) : ?>
+                    <?php $this->setCliTarget($device->address, $device->user, $device->password); ?>
                     <?php $this->util->setMenu('/ppp active'); ?>
                     <?php if ($this->util->count() > 0) : ?>
                         <li class="nav-item" role="presentation">
@@ -73,7 +75,9 @@
         <?php foreach ($this->view->devices as $device) : ?>
             <?php if ($device->user_id == $this->view->user->id) : ?>
                 <div class="tab-pane fade" id="<?php echo $device->name; ?>" role="tabpanel" aria-labelledby="<?php echo $device->name; ?>-tab">
-                    <?php if ($this->setCliTarget($device->address, $device->user, $device->password) == true) : ?>
+                    <?php $check = $this->checkCliTarget($device->address); ?>
+                    <?php if ($check == true) : ?>
+                        <?php $this->setCliTarget($device->address, $device->user, $device->password); ?>
                         <?php $this->util->setMenu('/ppp active'); ?>
                         <?php if ($this->util->count() > 0) : ?>
                             <div class="row row-cols-1 row-cols-md-3 g-4">

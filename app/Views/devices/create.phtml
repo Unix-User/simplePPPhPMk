@@ -14,25 +14,34 @@
                 </div>
                 <div class="form-group <?php echo (isset($this->errors['address'])) ? 'has-error' : ''; ?>">
                     <label for="title">Endereço ip:</label>
-                    <input type="text" name="address" class="form-control" value="<?php echo (isset($this->inputs['address'])) ? $this->inputs['address'] : '';?>" />
+                    <input type="text" name="address" class="form-control" value="<?php echo (isset($this->inputs['address'])) ? $this->inputs['address'] : ''; ?>" />
                     <?php if (isset($this->errors['address'])) : ?>
                         <span class="help-block"><?php echo $this->errors['address'] ?></span>
                     <?php endif; ?>
                 </div>
 
-                <div class="form-group <?php echo(isset($this->errors['user'])) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (isset($this->errors['user'])) ? 'has-error' : ''; ?>">
                     <label for="title" class="control-label">usuario</label>
-                    <input type="text" name="user" class="form-control" value="<?php echo (isset($this->inputs['user'])) ? $this->inputs['user'] : ''; ?>"/>
-                    <?php if (isset($this->errors['user'])): ?>
+                    <input type="text" name="user" class="form-control" value="<?php echo (isset($this->inputs['user'])) ? $this->inputs['user'] : ''; ?>" />
+                    <?php if (isset($this->errors['user'])) : ?>
                         <span class="help-block"><?php echo $this->errors['user'] ?></span>
                     <?php endif; ?>
                 </div>
 
-                <div class="form-group <?php echo(isset($this->errors['password'])) ? 'has-error' : ''; ?>">
+                <div class="form-group <?php echo (isset($this->errors['password'])) ? 'has-error' : ''; ?>">
                     <label for="title" class="control-label">password</label>
-                    <input type="text" name="password" class="form-control" value="<?php echo (isset($this->inputs['password'])) ? $this->inputs['password'] : ''; ?>"/>
-                    <?php if (isset($this->errors['password'])): ?>
+                    <input type="text" name="password" class="form-control" value="<?php echo (isset($this->inputs['password'])) ? $this->inputs['password'] : ''; ?>" />
+                    <?php if (isset($this->errors['password'])) : ?>
                         <span class="help-block"><?php echo $this->errors['password'] ?></span>
+                    <?php endif; ?>
+                </div>
+
+                <div class="form-group <?php echo (isset($this->errors['ikev2'])) ? 'has-error' : ''; ?>">
+                    
+                    <input type="checkbox" name="ikev2" class="form-check-input" value="" id="<?php echo (isset($this->inputs['ikev2'])) ? 'flexCheckDefault' : ''; ?>" />
+                    <label for="flexCheckDefault" class="form-check-label">Ikev2</label>
+                    <?php if (isset($this->errors['ikev2'])) : ?>
+                        <span class="help-block"><?php echo $this->errors['ikev2'] ?></span>
                     <?php endif; ?>
                 </div>
             </div>

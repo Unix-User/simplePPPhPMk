@@ -137,6 +137,20 @@ abstract class BaseController
         $this->pageTitle = $pageTitle;
     }
 
+    protected function checkCliTarget($address)
+    {
+        $ports = array(8728, 8729);
+        foreach ($ports as $port) {
+            $connection = @fsockopen($address, $port, $errno, $errstr, 3);
+            if (is_resource($connection)) {
+                fclose($connection);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     protected function setCliTarget($address, $user, $pass)
     {
         Session::destroy('cli');
