@@ -32,6 +32,6 @@ function sync(url, body, device) {
                 });
             })
     }).catch(function (err) {
-        alert('Falha ao receber informações:' + err);
+        alert('Falha ao receber informações, verifique se as permissões de CORS no servidor do site ' + url + 'estão habilitadas');
     });
 }

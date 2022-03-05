@@ -1627,3 +1627,4 @@ app/Models/Product.php
 app/Controllers/ProductsController.php
 storage/database/k8s@srv.unixlocal.ml
 storage/database/database.db
+storage/database/database.db

@@ -31,9 +31,11 @@ namespace Core;
  *
  * @author Weverton
  */
-class Validator {
+class Validator
+{
 
-    public static function make(array $data, array $rules) {
+    public static function make(array $data, array $rules)
+    {
         $errors = NULL;
         foreach ($rules as $ruleKey => $ruleValue) {
 
@@ -42,7 +44,6 @@ class Validator {
                     $itemsValue = [];
                     if (strpos($ruleValue, "|")) {
                         $itemsValue = explode('|', $ruleValue);
-
                         foreach ($itemsValue as $itemValue) {
                             $subItems = [];
                             if (strpos($itemValue, ":")) {
@@ -75,6 +76,10 @@ class Validator {
                                         if ($dataValue == '' || empty($dataValue))
                                             $errors["$ruleKey"] = " O campo {$ruleKey} deve ser preenchido";
                                         break;
+                                    case 'ip':
+                                        if (!filter_var($dataValue, FILTER_VALIDATE_IP))
+                                            $errors["$ruleKey"] = " O campo {$ruleKey} não contem um endereço ip";
+                                        break;
                                     case 'email':
                                         if (!filter_var($dataValue, FILTER_VALIDATE_EMAIL))
                                             $errors["$ruleKey"] = " O campo {$ruleKey} não contem dados válidos";
@@ -87,7 +92,14 @@ class Validator {
                                         if (!filter_var($dataValue, FILTER_VALIDATE_INT))
                                             $errors["$ruleKey"] = " O campo {$ruleKey} deve conter um numero inteiro";
                                         break;
-                                    default :
+                                    case 'normalize':
+                                        $namefields = array(
+                                            "options" => array("regexp" => "/^\S*$/u")
+                                        );
+                                        if (!filter_var($dataValue, FILTER_VALIDATE_REGEXP, $namefields))
+                                            $errors["$ruleKey"] = " O campo {$ruleKey} não pode conter espaços ou caracteres especiais";
+                                        break;
+                                    default:
                                         break;
                                 }
                             }
@@ -124,6 +136,10 @@ class Validator {
                             if ($dataValue == '' || empty($dataValue))
                                 $errors["$ruleKey"] = " O campo {$ruleKey} deve ser preenchido";
                             break;
+                        case 'ip':
+                            if (!filter_var($dataValue, FILTER_VALIDATE_IP))
+                                $errors["$ruleKey"] = " O campo {$ruleKey} não contem um endereço ip";
+                            break;
                         case 'email':
                             if (!filter_var($dataValue, FILTER_VALIDATE_EMAIL))
                                 $errors["$ruleKey"] = " O campo {$ruleKey} não contem dados válidos";
@@ -136,7 +152,14 @@ class Validator {
                             if (!filter_var($dataValue, FILTER_VALIDATE_INT))
                                 $errors["$ruleKey"] = " O campo {$ruleKey} deve conter um numero inteiro";
                             break;
-                        default :
+                        case 'normalize':
+                            $namefields = array(
+                                "options" => array("regexp" => "/^\S*$/u")
+                            );
+                            if (!filter_var($dataValue, FILTER_VALIDATE_REGEXP, $namefields))
+                                $errors["$ruleKey"] = " O campo {$ruleKey} não pode conter espaços ou caracteres especiais";
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -151,5 +174,4 @@ class Validator {
             return FALSE;
         }
     }
-
 }

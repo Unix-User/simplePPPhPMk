@@ -49,16 +49,18 @@
                         </div>
                         <div class="card-footer">
                             <small class="text-muted float-end">
-                                <?php if ($connection == true) : ?>
+                                <?php if ($check == true) : ?>
                                     <button class="btn btn-primary btn-xs" type="button" onclick='sync("<?php echo $this->view->user->url; ?>", "email=<?php echo $this->view->user->email; ?>&password=<?php echo $device->password; ?>", "<?php echo $device->id ?>");'>
                                         <i class="bi-arrow-repeat"></i>
                                     </button>
                                 <?php endif; ?>
+                                <?php if ($device->ikev2 == true) : ?>
                                 <a href="/device/<?php echo $device->id ?>/getCert" onclick="alert('Baixando seu certificado')">
                                     <button class="btn btn-success btn-xs" type="button">
                                         <i class="bi-key"></i>
                                     </button>
                                 </a>
+                                <?php endif; ?>
                                 <a href="/device/<?php echo $device->id ?>/edit">
                                     <button class="btn btn-warning btn-xs" type="button">
                                         <i class="bi-pencil"></i>

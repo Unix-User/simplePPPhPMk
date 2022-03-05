@@ -141,7 +141,7 @@ abstract class BaseController
     {
         $ports = array(8728, 8729);
         foreach ($ports as $port) {
-            $connection = @fsockopen($address, $port, $errno, $errstr, 3);
+            $connection = @fsockopen($address, $port, $errno, $errstr, 1);
             if (is_resource($connection)) {
                 fclose($connection);
                 return true;

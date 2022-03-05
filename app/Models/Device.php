@@ -39,11 +39,21 @@ class Device extends BaseModelElloquent {
     public $timestamps = false;
     protected $fillable = ['user_id', 'name', 'address', 'user', 'password', 'ikev2'];
 
-    public function rules() {
+    public function rulesCreate() {
         return [
-            'name' => 'required|min:2|max:20',
-            'user' => 'required|min:2|max:20',
-            'password' => 'required|min:2|max:20'
+            'name' => 'normalize|required|min:2|max:20',
+            'user' => 'normalize|required|min:2|max:20',
+            'password' => 'required|min:2|max:20',
+            'address' => 'ip|unique:Device:address'
+        ];
+    }
+    
+    public function rulesUpdate($id) {
+        return [
+            'name' => 'normalize|required|min:2|max:20',
+            'user' => 'normalize|required|min:2|max:20',
+            'password' => 'required|min:2|max:20',
+            'address' => 'ip|unique:Device:address:'.$id
         ];
     }
 

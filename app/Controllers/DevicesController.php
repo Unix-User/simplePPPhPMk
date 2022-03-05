@@ -90,7 +90,7 @@ class DevicesController extends BaseController
         $response = new Response($this->downloadable_file_stream_contents);
         $disposition = HeaderUtils::makeDisposition(
             HeaderUtils::DISPOSITION_ATTACHMENT,
-            'certificate.p12'
+            $client . '.p12'
         );
         $response->headers->set('Content-Disposition', $disposition);
         $response->send();
@@ -101,14 +101,14 @@ class DevicesController extends BaseController
     {
         $data = [
             'user_id' => Auth::id(),
-            'name' => $request->post->device,
+            'name' => $request->post->name,
             'address' => $request->post->address,
             'user' => $request->post->user,
             'password' => $request->post->password,
             'ikev2' => $request->post->ikev2
         ];
 
-        if (Validator::make($data, $this->device->rules())) {
+        if (Validator::make($data, $this->device->rulesCreate())) {
             return Redirect::route('/device/create');
         }
 
@@ -146,19 +146,20 @@ class DevicesController extends BaseController
     public function update($id, $request)
     {
         $data = [
-            'name' => $request->post->device,
+            'name' => $request->post->name,
             'address' => $request->post->address,
             'user' => $request->post->user,
             'password' => $request->post->password,
             'ikev2' => $request->post->ikev2
         ];
 
-        if (Validator::make($data, $this->device->rules())) {
+        if (Validator::make($data, $this->device->rulesUpdate($id))) {
             return Redirect::route("/device/{$id}/edit");
         }
 
         try {
-            if ((isset($request->post->ikev2)) && ($request->post->ikev2 == true)) {
+            if ((isset($data['ikev2'])) && ($data['ikev2'] == true)) {
+                echo $data['ikev2'];
                 $this->cliCert('--addclient', $data['name'], $data['address']);
             }
             $device = $this->device->find($id);
