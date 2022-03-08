@@ -82,17 +82,45 @@
                         <?php if ($this->util->count() > 0) : ?>
                             <div class="row row-cols-1 row-cols-md-3 g-4">
                                 <?php foreach ($this->util->getAll() as $user) : ?>
+                                    <?php  // set name, profile
+                                    $name = $user->getProperty('name');
+                                    $uptime = $user->getProperty('uptime');
+                                    $address = $user->getProperty('address'); ?>
                                     <div class="col">
                                         <div class="card h-100">
                                             <div class="card-body">
-                                                <h3 class="h3"><i class="bi-person"></i><?php echo $user->getProperty('name'); ?></h3>
-                                                <p class="card-text text-justify">Tempo de Conexão: <?php echo $user->getProperty('uptime'); ?></p>
+                                                <h3 class="h3"><i class="bi-person"></i><?php echo $name; ?></h3>
+                                                <p class="card-text text-justify">Tempo de Conexão: <?php echo $uptime; ?>
+                                                    <?php //get status for this client
+                                                    $this->util->setMenu('/interface');
+                                                    $status = $this->util->getAll();
+                                                    foreach ($status as $user) {
+                                                        if ($user->getProperty('name') == '<pppoe-' . $name . '>') {
+                                                            //the next values are prompted in MiB, we will conver to MB and GB to keep user friendly readable || 1 MiB = 1.048576 MB
+                                                            $precision = 2;
+                                                            $units = array('B', 'KB', 'MB', 'GB', 'TB');
+                                                            $rx = max($user->getProperty('rx-byte'), 0);
+                                                            $pow = floor(($rx ? log($rx) : 0) / log(1024));
+                                                            $pow = min($pow, count($units) - 1);
+                                                            $rx /= pow(1024, $pow);
+                                                            $rx = round($rx, $precision) . ' ' . $units[$pow];
+                                                            $tx = max($user->getProperty('tx-byte'), 0);
+                                                            $pow = floor(($tx ? log($tx) : 0) / log(1024));
+                                                            $pow = min($pow, count($units) - 1);
+                                                            $tx /= pow(1024, $pow);
+                                                            $tx = round($tx, $precision) . ' ' . $units[$pow];
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <br />Dados recebidos: <?php echo $rx; ?>
+                                                    <br />Dados transferidos: <?php echo $tx; ?>
+                                                </p>
                                             </div>
                                             <div class="card-footer">
                                                 <small class="text-muted float-end">
-                                                    <a href="<?php echo 'http://' . $user->getProperty('address'); ?>" target="_blank">
+                                                    <a href="<?php echo 'http://' . $address; ?>" target="_blank">
                                                         <button class="btn btn-primary btn-xs" type="button">
-                                                            <i class="bi-router"></i> <?php echo $user->getProperty('address'); ?>
+                                                            <i class="bi-router"></i> <?php echo $address; ?>
                                                         </button>
                                                     </a>
                                                 </small>
