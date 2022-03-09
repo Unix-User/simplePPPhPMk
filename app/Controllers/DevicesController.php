@@ -85,7 +85,7 @@ class DevicesController extends BaseController
     public function getCert($id)
     {
         $client = $this->device->find($id)->name;
-        $downloadable_file_stream = $this->filesystem->readStream('/' . $client . '.p12');
+        $downloadable_file_stream = $this->filesystem->readStream('/backend/storage/' . $client . '.p12');
         $this->downloadable_file_stream_contents = stream_get_contents($downloadable_file_stream);
         $response = new Response($this->downloadable_file_stream_contents);
         $disposition = HeaderUtils::makeDisposition(
@@ -145,24 +145,25 @@ class DevicesController extends BaseController
 
     public function update($id, $request)
     {
+        $device = $this->device->find($id);
         $data = [
             'name' => $request->post->name,
             'address' => $request->post->address,
             'user' => $request->post->user,
             'password' => $request->post->password,
-            'ikev2' => $request->post->ikev2
+            'ikev2' => ($device->ikev2 == true)? true : $request->post->ikev2
         ];
-
         if (Validator::make($data, $this->device->rulesUpdate($id))) {
             return Redirect::route("/device/{$id}/edit");
         }
-
         try {
-            if ((isset($data['ikev2'])) && ($data['ikev2'] == true)) {
-                echo $data['ikev2'];
-                $this->cliCert('--addclient', $data['name'], $data['address']);
+            if ((isset($data['ikev2']))) {
+                if(($data['ikev2'] == true) && ($device->ikev2 == false)){
+                    $this->cliCert('--addclient', $data['name'], $data['address']);
+                } else {
+                    $this->cliCert('--exportclient', $data['name'], $data['address']);
+                }
             }
-            $device = $this->device->find($id);
             $device->update($data);
             $this->device->find($id)->update($data);
             return Redirect::route('/devices', [
@@ -185,8 +186,9 @@ class DevicesController extends BaseController
                 ]);
             }
             if ((isset($device->ikev2)) && ($device->ikev2 == true)) {
-                $this->manager->write('local://html/storage/' . $device->name . '.conf', '');
+                $this->manager->write('local://backend/storage/' . $device->name . '.conf', '');
                 $this->cliCert('--revokeclient', $device->name, $device->address);
+                $this->manager->delete('local://backend/storage/' . $device->name . '.conf');
             }
             $device->delete();
             return Redirect::route('/devices', [

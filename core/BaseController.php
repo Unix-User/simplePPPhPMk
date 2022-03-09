@@ -159,7 +159,6 @@ abstract class BaseController
             'user' => $user,
             'pass' => $pass
         ];
-
         try {
             $this->util = new RouterOS\Util(
                 $this->client = new RouterOS\Client($data['address'], $data['user'], $data['pass'])
@@ -177,11 +176,7 @@ abstract class BaseController
         $this->process1 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-F', '-d', 'sql:/etc/ipsec.d', '-n', $client]);
         $this->process2 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-D', '-d', 'sql:/etc/ipsec.d', '-n', $client, '2>/dev/null']);
         $this->process3 = new Process(['sudo', '-u', 'www-data', 'sudo', 'systemctl', 'restart', 'ipsec.service',]);
-        $content = 'conn ' . $client . '
-        rightid=@' . $client . '
-        rightaddresspool=' . $address . '-' . $address . '
-        also=ikev2-cp
-        ';
+        $content = "conn $client" . PHP_EOL. "  rightid=@$client" . PHP_EOL. "  rightaddresspool=$address-$address" . PHP_EOL. "  also=ikev2-cp" . PHP_EOL;
         try {
             $this->process->run();
             $this->process->getOutput();
@@ -192,9 +187,13 @@ abstract class BaseController
                 $this->process2->run();
                 $this->process2->getOutput();
             }
-            $this->manager->write('local://html/storage/' . $client . '.conf', $content);
             $this->process3->run();
             $this->process3->getOutput();
+            $this->manager->delete('local://backend/storage/' . $client . '.p12');
+            $this->manager->delete('local://' . $client . '.sswan');
+            $this->manager->delete('local://' . $client . '.mobileconfig');
+            $this->manager->write('local://backend/storage/' . $client . '.conf', $content);
+            $this->manager->move('local://' . $client . '.p12', 'local://backend/storage/' . $client . '.p12');
         } catch (ProcessFailedException $exception) {
             return $exception->getMessage();
         }
