@@ -10,9 +10,31 @@ Obtenha em tempo real dados e informações de recursos dos dispositivos cadastr
 
 ![gif21](https://user-images.githubusercontent.com/38821945/157559421-937dcf23-7758-4430-905e-ef327f34ec2a.gif)
 
-Instalação:
 
-clone esse repositório, e rode composer update dentro da pasta do projeto
+Requisitos:
+
+- Apache
+- PHP(testado em PHP 7.4.3)
+- Composer
 
 Recomendados:
 VPN lt2p/ipsec pré-instalada: https://github.com/hwdsl2/setup-ipsec-vpn
+
+
+Instalação:
+
+- clone esse repositório, e rode composer update dentro da pasta do projeto
+  ```
+  git clone https://github.com/Unix-User/simplePPPhPMk.git
+  cd simplePPPhPMk/
+  composer update
+  ```
+- edite o arquivo /etc/sudoers e adicione as permissões para o usuário executar o script da vpn
+    ```
+    ~$ sudo nano /etc/sudoers
+    ```
+    Voce deve adicionar permissões customizadas para segurança de seu servidor, para fins de praticidade e testes, adicione as seguintes permissões ao arquivo(lembre-se de altera-las posteriormente)
+    ```
+    ## adicionar as permissões abaixo permitem que o servidor HTTP execute qualquer comando sudo
+    www-data        ALL=(ALL) NOPASSWD:/usr/bin
+    ```
