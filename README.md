@@ -38,3 +38,7 @@ Instalação:
     ## adicionar as permissões abaixo permitem que o servidor HTTP execute qualquer comando sudo
     www-data        ALL=(ALL) NOPASSWD:/usr/bin
     ```
+Em breve
+- [ ] Melhorias no modulo vpn-ikev2 (método de acesso direto sem shell scripts)
+- [ ] Sistema de agendamento com Schedulle ou Cron
+- [ ] Mesclar projeto com o https://github.com/Unix-User/MP_unixlocal para uma aplicação mais completa :tada:
