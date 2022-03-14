@@ -17,7 +17,7 @@
     },
     "require": {
         "php": ">=7.2.5",
-        "illuminate/database": "^7.0",
+        "illuminate/database": "^8.83",
         "doctrine/common": "^2.6",
         "doctrine/annotations": "^1.8",
         "league/flysystem": "^2.0",
@@ -25,6 +25,10 @@
         "pear2/net_routeros": "dev-develop@dev",
         "pear2/cache_shm": "^0.2.0",
         "symfony/process": "^5.4",
-        "symfony/http-foundation": "^5.4"
+        "symfony/http-foundation": "^5.4",
+        "illuminate/contracts": "^8.83",
+        "illuminate/console": "^8.83",
+        "illuminate/queue": "^8.83",
+        "illuminate/bus": "^8.83"
     }
 }

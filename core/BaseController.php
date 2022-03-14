@@ -29,6 +29,7 @@ namespace Core;
 use PEAR2\Net\RouterOS;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use Illuminate\Console\Scheduling\Schedule;
 use League\Flysystem\Filesystem;
 use League\Flysystem\MountManager;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -197,6 +198,13 @@ abstract class BaseController
         } catch (ProcessFailedException $exception) {
             return $exception->getMessage();
         }
+    }
+
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->call(function () {
+            // code here
+        })->everyMinute();
     }
 
     protected function getPageTitle($separator = null)
