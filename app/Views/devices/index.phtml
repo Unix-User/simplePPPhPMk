@@ -30,7 +30,8 @@
                             </a>
                             <p class="card-text text-justify">Endereço IP: <?php echo $device->address; ?>
                                 <?php if ($check == true) : ?>
-                                    <?php $this->setCliTarget($device->address, $device->user, $device->password); ?>
+                                    <?php $set = $this->setCliTarget($device->address, $device->user, $device->password); ?>
+                                    <?php if ($set == true) : ?>
                                     <?php $this->util->setMenu('/system resource') ?>
                                     <?php foreach ($this->util->getAll() as $item) : ?>
                                         <small class="text-muted float-end">CPU: <?php echo $item->getProperty('cpu-load') . '%'; ?></small>
@@ -40,6 +41,8 @@
                                         <?php $active = $this->util->setMenu('/ppp active'); ?>
                                         <br />Clientes conectados: <?php echo count($active) . "\n"; ?>
                                     <?php endforeach; ?>
+                                    <?php else : ?>
+                                    <?php endif; ?>
                                 <?php else : ?>
                                     <br />Tempo ligado: offline
                                     <br />Clientes cadastrados: --
