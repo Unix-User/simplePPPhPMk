@@ -32,16 +32,19 @@
                                 <?php if ($check == true) : ?>
                                     <?php $set = $this->setCliTarget($device->address, $device->user, $device->password); ?>
                                     <?php if ($set == true) : ?>
-                                    <?php $this->util->setMenu('/system resource') ?>
-                                    <?php foreach ($this->util->getAll() as $item) : ?>
-                                        <small class="text-muted float-end">CPU: <?php echo $item->getProperty('cpu-load') . '%'; ?></small>
-                                        <br />Tempo ligado: <?php echo $item->getProperty('uptime'); ?>
-                                        <?php $secrets = $this->util->setMenu('/ppp secret'); ?>
-                                        <br />Clientes cadastrados: <?php echo count($secrets) . "\n"; ?>
-                                        <?php $active = $this->util->setMenu('/ppp active'); ?>
-                                        <br />Clientes conectados: <?php echo count($active) . "\n"; ?>
-                                    <?php endforeach; ?>
+                                        <?php $this->util->setMenu('/system resource') ?>
+                                        <?php foreach ($this->util->getAll() as $item) : ?>
+                                            <small class="text-muted float-end">CPU: <?php echo $item->getProperty('cpu-load') . '%'; ?></small>
+                                            <br />Tempo ligado: <?php echo $item->getProperty('uptime'); ?>
+                                            <?php $secrets = $this->util->setMenu('/ppp secret'); ?>
+                                            <br />Clientes cadastrados: <?php echo count($secrets) . "\n"; ?>
+                                            <?php $active = $this->util->setMenu('/ppp active'); ?>
+                                            <br />Clientes conectados: <?php echo count($active) . "\n"; ?>
+                                        <?php endforeach; ?>
                                     <?php else : ?>
+                                        <br />Tempo ligado: desconectado
+                                        <br />Clientes cadastrados: --
+                                        <br />Clientes conectados: --
                                     <?php endif; ?>
                                 <?php else : ?>
                                     <br />Tempo ligado: offline
@@ -58,11 +61,11 @@
                                     </button>
                                 <?php endif; ?>
                                 <?php if ($device->ikev2 == true) : ?>
-                                <a href="/device/<?php echo $device->id ?>/getCert" onclick="alert('Baixando seu certificado')">
-                                    <button class="btn btn-success btn-xs" type="button">
-                                        <i class="bi-key"></i>
-                                    </button>
-                                </a>
+                                    <a href="/device/<?php echo $device->id ?>/getCert" onclick="alert('Baixando seu certificado')">
+                                        <button class="btn btn-success btn-xs" type="button">
+                                            <i class="bi-key"></i>
+                                        </button>
+                                    </a>
                                 <?php endif; ?>
                                 <a href="/device/<?php echo $device->id ?>/edit">
                                     <button class="btn btn-warning btn-xs" type="button">
