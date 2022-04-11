@@ -38,10 +38,13 @@ $routes[] = ['/device/{id}/delete', 'DevicesController@delete', 'auth'];
 $routes[] = ['/device/{id}/sync', 'DevicesController@sync'];
 
 $routes[] = ['/users', 'UsersController@index', 'auth'];
+$routes[] = ['/user/{id}/shedule', 'UsersController@shedule', 'auth'];
+$routes[] = ['/user/{id}/sync', 'UsersController@sync'];
 $routes[] = ['/user/create', 'UsersController@create'];
 $routes[] = ['/user/store', 'UsersController@store'];
 $routes[] = ['/user/{id}/show', 'UsersController@show', 'auth'];
 $routes[] = ['/user/{id}/edit', 'UsersController@edit', 'auth'];
+$routes[] = ['/user/{id}/getCert', 'UsersController@getCert', 'auth'];
 $routes[] = ['/user/{id}/update', 'UsersController@update', 'auth'];
 $routes[] = ['/user/{id}/delete', 'UsersController@delete', 'auth'];
 $routes[] = ['/user/{id}/disconnect', 'UsersController@disconnect', 'auth'];

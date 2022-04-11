@@ -1,0 +1,108 @@
+<div class="container">
+    <?php $this->renderView('alerts/_success'); ?>
+    <?php $this->renderView('alerts/_errors'); ?>
+    <h1>Adicionar agendamento</h1>
+    <form action="/user/<?php echo $this->view->user->id; ?>/shedule" method="post">
+        <div class="form-group">
+            <label for="password">Senha de acesso ao site:</label>
+            <input type="text" class="form-control" id="password" name="password" value="" required>
+        </div>
+        <div class="form-group">
+            <label for="time">Período de execução</label>
+            <select class="form-control" id="time" name="time" required>
+                <option value="* * * * *">Todos os minutos</option>
+                <option value="*/5 * * * *">Cada 5 minutos</option>
+                <option value="*/10 * * * *">Cada 10 minutos</option>
+                <option value="*/15 * * * *">Cada 15 minutos</option>
+                <option value="*/30 * * * *">Cada 30 minutos</option>
+                <option value="0 * * * *">Cada hora</option>
+                <option value="0 0 * * *">Cada dia</option>
+                <option value="0 0 * * 0">Cada semana</option>
+                <option value="0 0 1 * *">Cada mês</option>
+                <option value="0 0 1 1 *">Cada ano</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="device">Dispositivo</label>
+            <select class="form-control" id="device" name="device" required>
+                <option value="">Selecione</option>
+                <?php foreach ($this->view->devices as $device) : ?>
+                    <?php if ($device->user_id == $this->view->user->id) : ?>
+                        <option value="<?php echo $device->id; ?>" <?php echo ($device->id == $this->view->shedule->device_id) ? 'selected' : ''; ?>><?php echo $device->name; ?></option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="/users" class="btn btn-danger">Cancelar</a>
+    </form>
+    <?php
+    $crontab = shell_exec('crontab -l');
+    $crontab = explode("\n", $crontab);
+    ?>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th>Dispositivo</th>
+                <th>Url</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($crontab as $cron) : ?>
+                <?php
+                $cron = explode(' ', $cron);
+                //time is strnig of $cron 0 to 4
+                $time = $cron[0] . ' ' . $cron[1] . ' ' . $cron[2] . ' ' . $cron[3] . ' ' . $cron[4];
+                switch ($time) {
+                    case '* * * * *':
+                        $time = 'Todos os minutos';
+                        break;
+                    case '*/5 * * * *':
+                        $time = 'Cada 5 minutos';
+                        break;
+                    case '*/10 * * * *':
+                        $time = 'Cada 10 minutos';
+                        break;
+                    case '*/15 * * * *':
+                        $time = 'Cada 15 minutos';
+                        break;
+                    case '*/30 * * * *':
+                        $time = 'Cada 30 minutos';
+                        break;
+                    case '0 * * * *':
+                        $time = 'Cada hora';
+                        break;
+                    case '0 0 * * *':
+                        $time = 'Cada dia';
+                        break;
+                    case '0 0 * * 0':
+                        $time = 'Cada semana';
+                        break;
+                    case '0 0 1 * *':
+                        $time = 'Cada mês';
+                        break;
+                    case '0 0 1 1 *':
+                        $time = 'Cada ano';
+                        break;
+                    default:
+                        $time = 'Não definido';
+                        break;
+                }
+                $command = array_slice($cron, 5);
+                $command = implode(' ', $command);
+                $password = substr(substr($command, strpos($command, 'password=') + 9), 0, -1);
+                // get device id from url in command string between 'user/' and '/sync'
+                $device_id = substr($command, strpos($command, 'user/') + 5, strpos($command, '/sync') - strpos($command, 'user/') - 5);
+                ?>
+                <?php if (password_verify($password, $this->view->user->password)) : ?>
+                    <tr>
+                        <td><?php echo $time; ?></td>
+                        <td><?php echo $this->device->find($device_id)->name; ?></td>
+                        <td><?php echo $this->view->user->url; ?></td>
+                    </tr>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

@@ -171,42 +171,51 @@ abstract class BaseController
         }
     }
 
-    protected function cliCert($action, $client, $address)
+    protected function runCommand($command)
     {
+        $process = new Process($command);
+        $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        return $process->getOutput();
+    }
+
+    protected function cliCert($action, $client, $address = '')
+    {
+        if ($address == !null) {
+            $address = PHP_EOL . "  rightaddresspool=$address-$address";
+        }
         $this->process = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/ikev2.sh',  $action, $client]);
         $this->process1 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-F', '-d', 'sql:/etc/ipsec.d', '-n', $client]);
         $this->process2 = new Process(['sudo', '-u', 'www-data', 'sudo', '/usr/bin/certutil', '-D', '-d', 'sql:/etc/ipsec.d', '-n', $client, '2>/dev/null']);
         $this->process3 = new Process(['sudo', '-u', 'www-data', 'sudo', 'systemctl', 'restart', 'ipsec.service',]);
-        $content = "conn $client" . PHP_EOL. "  rightid=@$client" . PHP_EOL. "  rightaddresspool=$address-$address" . PHP_EOL. "  also=ikev2-cp" . PHP_EOL;
+        $content = "conn $client" . PHP_EOL . "  rightid=@$client" . $address . PHP_EOL . "  also=ikev2-cp" . PHP_EOL;
         try {
             $this->process->run();
             $this->process->getOutput();
+            $this->manager->delete('local://backend/storage/' . $client . '.p12');
+            $this->manager->delete('local://' . $client . '.sswan');
+            $this->manager->delete('local://' . $client . '.mobileconfig');
+            $this->manager->write('local://backend/storage/' . $client . '.conf', $content);
             if ($action == "--revokeclient") {
                 $content == '';
                 $this->process1->run();
                 $this->process1->getOutput();
                 $this->process2->run();
                 $this->process2->getOutput();
+                $this->process3->run();
+                $this->process3->getOutput();
+                return;
             }
+            $this->manager->move('local://' . $client . '.p12', 'local://backend/storage/' . $client . '.p12');
             $this->process3->run();
             $this->process3->getOutput();
-            $this->manager->delete('local://backend/storage/' . $client . '.p12');
-            $this->manager->delete('local://' . $client . '.sswan');
-            $this->manager->delete('local://' . $client . '.mobileconfig');
-            $this->manager->write('local://backend/storage/' . $client . '.conf', $content);
-            $this->manager->move('local://' . $client . '.p12', 'local://backend/storage/' . $client . '.p12');
         } catch (ProcessFailedException $exception) {
             return $exception->getMessage();
         }
     }
-
-    protected function schedule(Schedule $schedule)
-    {
-        $schedule->call(function () {
-            // code here
-        })->everyMinute();
-    }
-
+    
     protected function getPageTitle($separator = null)
     {
         if ($separator) {

@@ -33,6 +33,8 @@ use Core\Auth;
 use Core\Redirect;
 use Core\Validator;
 use Core\Authenticate;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Description of ProductController
@@ -80,6 +82,20 @@ class UsersController extends BaseController
         return $this->renderView("users/create", 'layout');
     }
 
+    public function getCert($id)
+    {
+        $client = $this->user->find($id)->name;
+        $downloadable_file_stream = $this->filesystem->readStream('/backend/storage/' . $client . '.p12');
+        $this->downloadable_file_stream_contents = stream_get_contents($downloadable_file_stream);
+        $response = new Response($this->downloadable_file_stream_contents);
+        $disposition = HeaderUtils::makeDisposition(
+            HeaderUtils::DISPOSITION_ATTACHMENT,
+            $client . '.p12'
+        );
+        $response->headers->set('Content-Disposition', $disposition);
+        $response->send();
+    }
+
     public function store($request)
     {
         $data = [
@@ -96,6 +112,7 @@ class UsersController extends BaseController
 
         try {
             $this->user->create($data);
+            $this->cliCert('--addclient', $data['name'], null);
             return Redirect::route('/users', [
                 'success' => ['Usuário cadastrado com sucesso']
             ]);
@@ -135,6 +152,7 @@ class UsersController extends BaseController
 
         try {
             $this->user->find($id)->update($data);
+            $this->cliCert('--exportclient', $data['name'], null);
             return Redirect::route('/users', [
                 'success' => ['Dados do usuário foram atualizados com sucesso']
             ]);
@@ -148,6 +166,10 @@ class UsersController extends BaseController
     public function delete($id)
     {
         try {
+            $user = $this->user->find($id);
+            $this->manager->write('local://backend/storage/' . $user->name . '.conf', '');
+            $this->cliCert('--revokeclient', $user->name, null);
+            $this->manager->delete('local://backend/storage/' . $user->name . '.conf');
             $this->user->find($id)->delete();
             return Redirect::route('/users', [
                 'success' => ['Usuário excluido com sucesso']
@@ -216,6 +238,83 @@ class UsersController extends BaseController
             return Redirect::route('/devices', [
                 'errors' => ['Erro ao remover usuário: ' . $name . ' - msg:' . $ex->getMessage()]
             ]);
+        }
+    }
+
+    public function shedule($id, $request)
+    {
+        if (Auth::id() != $id) {
+            return Redirect::route('/users', [
+                'errors' => ['Não foi possivel solicitar o agendamento de conexão.']
+            ]);
+        }
+        $this->view->user = $this->user->find($id);
+        if ((isset($request)) && ($request->post != '')) {
+            $data = [
+                'password' => $request->post->password,
+                'time' => $request->post->time,
+                'device' => $request->post->device
+            ];
+            $this->view->device = $this->device->find($data['device']);
+            $output = shell_exec('crontab -l');
+            $lines = explode(PHP_EOL, $output);
+            $new_string = ' curl -X POST https://srv.unixlocal.ml/user/' . $this->view->device->id . '/sync  -d "password=' . $data['password'] . '"';
+            $new_crontab = '';
+            foreach ($lines as $line) {
+                if (strpos($line, $new_string) === false) {
+                    $new_crontab .= $line . PHP_EOL;
+                }
+            }
+            $new_task = $data['time'] . $new_string;
+            $new_crontab .= $new_task . PHP_EOL;
+            $this->manager->write('local://backend/storage/crontab.txt', $new_crontab);
+            $this->runCommand(['crontab', '/var/www/backend/storage/crontab.txt']);
+            return Redirect::route('/devices', [
+                'success' => ['Agendamento de conexão realizado com sucesso']
+            ]);            
+        } else {
+            $this->view->devices = $this->device->all();
+            $this->setPageTitle('Agendamento de conexão - ' . $this->view->user->name);
+            return $this->renderView('users/shedule', 'layout');
+        }
+    }
+
+    public function sync($id, $request)
+    {
+        header('Content-Type: application/json');
+        //get device data from device id
+        $device = $this->device->find($id);
+        //get user data from device
+        $user = $this->user->find($device->user_id);
+        if ($user && password_verify($request->post->password, $user->password)) {
+            //get url from user
+            $url = $user->url;
+            //send post request to url
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, 'email=' . $user->email . '&password=' . $request->post->password);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $output = explode('|', substr(curl_exec($ch), 0, -1));
+            curl_close($ch);
+            //get data from response
+            foreach ($output as $record) {
+                $url = "https://srv.unixlocal.ml/device/". $id ."/sync";
+                $curl = curl_init($url);
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                $headers = array(
+                   "Content-Type: application/x-www-form-urlencoded",
+                );
+                curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $record);
+                curl_exec($curl);
+                curl_close($curl);
+            }
+        } else {
+            header("HTTP/1.1 404 Not Found");
+            exit;
         }
     }
 }

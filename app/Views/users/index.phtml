@@ -54,6 +54,16 @@
                             </div>
                             <div class="card-footer">
                                 <small class="text-muted float-end">
+                                <a href="/user/<?php echo $user->id ?>/getCert" onclick="alert('Baixando seu certificado')">
+                                        <button class="btn btn-success btn-xs" type="button">
+                                            <i class="bi-key"></i>
+                                        </button>
+                                    </a>
+                                    <a href="/user/<?php echo $user->id; ?>/shedule">
+                                        <button class="btn btn-primary">
+                                            <i class="bi-clock"></i>
+                                        </button>
+                                    </a>
                                     <a href="/user/<?php echo $user->id ?>/edit">
                                         <button class="btn btn-warning btn-xs" type="button">
                                             <i class="bi-pencil"></i>
