@@ -43,6 +43,6 @@ Em breve
 - [x] Hospedar na nuvem e gerar um dominio certificado para o servidor de testes da aplicação
 - [ ] Providenciar uma aparencia estilosa para o frontend.
 - [ ] Melhorias no modulo vpn-ikev2 (método de acesso direto sem shell scripts).
-- [ ] Sistema de agendamento com Schedulle ou Cron.
+- [x] Sistema de agendamento com Schedulle ou Cron.
 - [ ] Mesclar projeto com o https://github.com/Unix-User/MP_unixlocal em uma aplicação mais completa
 - [ ] Vender, ganhar dinheiro ou arrumar um bom emprego usando isso como referencia:tada:
