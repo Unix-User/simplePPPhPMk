@@ -46,5 +46,5 @@ Em breve
 - [ ] Providenciar uma aparencia estilosa para o frontend.
 - [ ] Melhorias no modulo vpn-ikev2 (método de acesso direto sem shell scripts).
 - [x] Sistema de agendamento com Schedulle ou Cron.
-- [ ] Mesclar projeto com o https://github.com/Unix-User/MP_unixlocal em uma aplicação mais completa
+- [x] Mesclar projeto com o https://github.com/Unix-User/MP_unixlocal em uma aplicação mais completa (em breve)
 - [ ] Vender, ganhar dinheiro ou arrumar um bom emprego usando isso como referencia:tada:
