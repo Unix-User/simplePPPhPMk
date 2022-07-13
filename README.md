@@ -18,6 +18,8 @@ Requisitos:
 - Apache
 - PHP(testado em PHP 7.4.3)
 - Composer
+- Modrewite
+- Php sqlite3
 
 Recomendados:
 VPN lt2p/ipsec pré-instalada: https://github.com/hwdsl2/setup-ipsec-vpn
