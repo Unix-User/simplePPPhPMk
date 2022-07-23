@@ -18,7 +18,7 @@ Requisitos:
 - Apache
 - PHP(testado em PHP 7.4.3)
 - Composer
-- Modrewrite
+- mod_rewrite
 - Php sqlite3
 
 Recomendados:
